@@ -23,17 +23,24 @@ pipeline {
     stages {
         stage ('Build React') {
             steps {
-                git url: 'https://github.com/agray998/simple-node-js-react-npm-app'
+                // This is the URL of the your repository holding you react project
+                // If your React and Java Project is in the same repository then you will need to add a step to "cd" into the react project folder
+                
+                git url: 'https://github.com/your-repo'
                 
                 bat "npm install"
                 bat "npm test"
                 bat "npm package"
             }
         }
+        // This stage will fail until you have completed Project 3 (Java Springboot)
         stage ('Build Maven') {
             steps {
-
-                git url: 'https://github.com/agray998/SpringBoot-Jenkins',
+                // This is the URL of the your repository holding you Java/SpringBoot project
+                // If your React and Java Project is in the same repository then you don't need to clone the reporistory again BUT
+                // you will need to "cd" into the Java folder
+                
+                git url: 'https://github.com/your-repo',
                     branch: 'main'
 
                 withMaven {
