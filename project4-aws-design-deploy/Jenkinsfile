@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+    environment {
+        DOCKERHUB_LOGIN=credentials('DOCKERHUB_LOGIN')
+        DATABASE_URI=credentials('DATABASE_URI')
+    }
+    stages {
+        stage('Build Image') {
+            steps {
+                sh 'docker login -u ${DOCKERHUB_LOGIN_USR} -p ${DOCKERHUB_LOGIN_PSW}'
+                sh 'docker build -t ${DOCKERHUB_LOGIN_USR}/react-app -f react-app/Dockerfile .'
+                sh 'docker build -t ${DOCKERHUB_LOGIN_USR}/maven-app -f maven-app/Dockerfile .'
+                sh 'docker push ${DOCKERHUB_LOGIN_USR}/react-app:latest'
+                sh 'docker push ${DOCKERHUB_LOGIN_USR}/maven-app:latest'
+                // sh 'docker-compose build --parallel && docker-compose push'
+            }
+        }
+        stage('Deploy Application') {
+            steps {
+                sh 'docker run -d -p 3000:3000 --name react-app ${DOCKERHUB_LOGIN_USR}/react-app'
+                sh 'docker run -d -p 8080:8080 --name maven-app ${DOCKERHUB_LOGIN_USR}/maven-app'
+                // sh 'docker compose up -d'
+            }
+        }
+    }
+}
